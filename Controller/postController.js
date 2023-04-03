@@ -39,6 +39,7 @@ const getAllPosts = async (req, res) => {
         return res.status(400).json({status: 'failure', message: err.message})
     }
 }    
+
 const updatePost = async (req, res) => {
     try{
     const postId = req.params.id
@@ -69,7 +70,6 @@ const deletePost = async (req, res) => {
     if(postId){
     const deleteReq = await post.findByIdAndDelete({_id: postId})
     if(deleteReq){
-        const comments = await comment.deleteMany({postId : postId})
         return res.status(200).json({status: 'success', message: 'Post deleted successfully'})
     }
     return res.status(400).json({status: 'failure', message: 'cant delete comment of post'})
@@ -81,10 +81,21 @@ const deletePost = async (req, res) => {
     }
     
 }
+
+const getUSingAggregate = async (req, res) => {
+    try{
+    const aggregate = await post.aggregate([ {$skip :0},{$match: {userId : '6428080eb97557b3d92b9816'}}, { $limit : 3 }]);
+    res.json({aggregate: aggregate})
+    }
+    catch(err){
+        return res.status(400).json({status: 'failure', message: err.message})
+    }
+}
     
      module.exports = {
             createPost: createPost,
             getAllPosts : getAllPosts,
             updatePost : updatePost,
-            deletePost : deletePost
+            deletePost : deletePost,
+            getUSingAggregate: getUSingAggregate
       } 
