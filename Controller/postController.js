@@ -23,9 +23,14 @@ const getAllPosts = async (req, res) => {
        const page = parseInt(req.query.page)-1 || 0
        const limit = parseInt(req.query.limit) || 2
        const search = req.query.search || ""
-      if(page && limit){
-       const posts = await post.find({title: {$regex: search , $options: 'i'}}).skip(page*limit).limit(limit)
+       console.log(page, limit)
+      if(page>=0 && limit){
+       const posts = await post.find({title: {$regex: search , $options: 'i'}}).skip(page*limit).limit(limit).exec()
+       console.log(posts.length)
+       if(posts.length > 0){
        return res.status(200).json({status: 'success', page: page , posts: posts})
+       }
+       return  res.status(404).json({status: 'failure', message: 'page doesnt have posts'})
     }
   return  res.status(404).json({status: 'failure', message: 'page not found or limit exceeded'})
 }
